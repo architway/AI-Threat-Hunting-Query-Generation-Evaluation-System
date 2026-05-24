@@ -4,8 +4,11 @@ from config import AppConfig
 
 def test_streamlit_model_options_include_cerebras_models() -> None:
     assert CEREBRAS_MODEL_OPTIONS[0] == DEFAULT_CEREBRAS_MODEL
-    assert "llama3.1-8b" in CEREBRAS_MODEL_OPTIONS
-    assert "custom..." in CEREBRAS_MODEL_OPTIONS
+    assert CEREBRAS_MODEL_OPTIONS == [
+        "gpt-oss-120b",
+        "qwen-3-235b-a22b-instruct-2507",
+        "llama3.1-8b",
+    ]
 
 
 def test_config_defaults_to_one_repair_attempt(monkeypatch) -> None:

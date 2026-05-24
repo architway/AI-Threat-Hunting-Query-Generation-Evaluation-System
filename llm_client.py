@@ -53,6 +53,7 @@ class OpenAICompatibleClient:
         if not base_url or not base_url.strip():
             raise ValueError(f"Base URL is required for {provider_name} mode.")
 
+        import httpx
         from openai import OpenAI
 
         self.model = model
@@ -61,7 +62,13 @@ class OpenAICompatibleClient:
         self.temperature = temperature
         self.max_completion_tokens = max_completion_tokens
         self.provider_name = provider_name
-        kwargs = {"api_key": api_key, "base_url": self.base_url, "max_retries": 3}
+        self.http_client = httpx.Client(trust_env=False)
+        kwargs = {
+            "api_key": api_key,
+            "base_url": self.base_url,
+            "max_retries": 3,
+            "http_client": self.http_client,
+        }
         if default_headers:
             kwargs["default_headers"] = default_headers
         self.client = OpenAI(**kwargs)

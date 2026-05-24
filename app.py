@@ -20,10 +20,11 @@ from utils import load_hypotheses_outcomes
 
 
 CEREBRAS_MODEL_OPTIONS = [
+    "gpt-oss-120b",
+    "qwen-3-235b-a22b-instruct-2507",
     "llama3.1-8b",
-    "custom...",
 ]
-DEFAULT_CEREBRAS_MODEL = "llama3.1-8b"
+DEFAULT_CEREBRAS_MODEL = "gpt-oss-120b"
 
 
 st.set_page_config(
@@ -57,6 +58,7 @@ def main() -> None:
             st.session_state["last_result"] = result
         except Exception as exc:
             st.error(_display_error(exc))
+            _render_real_mode_guidance(exc, use_mock=selected["use_mock"])
 
     if selected["use_mock"] and st.sidebar.button(
         "Run full mock evaluation",
@@ -245,22 +247,37 @@ def _model_selector(base_model: str | None, use_mock: bool) -> str:
         return "mock-llm"
 
     options = CEREBRAS_MODEL_OPTIONS
-    default_model = base_model or DEFAULT_CEREBRAS_MODEL
-    index = options.index(default_model) if default_model in options else len(options) - 1
-    selected = st.sidebar.selectbox("Model", options, index=index)
-    if selected != "custom...":
-        return selected
-
-    return st.sidebar.text_input(
-        "Custom model ID",
-        value=default_model if default_model not in options else "",
-        placeholder="provider/model-or-model-id",
-    ).strip()
+    default_model = base_model if base_model in options else DEFAULT_CEREBRAS_MODEL
+    index = options.index(default_model)
+    return st.sidebar.selectbox("Model", options, index=index)
 
 
 def _display_error(exc: Exception) -> str:
     message = str(exc).strip()
     return message or f"{type(exc).__name__}: see terminal logs for details."
+
+
+def _render_real_mode_guidance(exc: Exception, use_mock: bool) -> None:
+    if use_mock:
+        return
+
+    st.info(
+        "Real Cerebras mode preflight: run `./.venv/Scripts/python.exe launch_check.py --real` "
+        "in a terminal, then rerun this hypothesis."
+    )
+    st.info(
+        "If you changed `.env`, stop all Streamlit terminals with Ctrl+C and restart with "
+        "`./.venv/Scripts/streamlit.exe run app.py`."
+    )
+
+    text = str(exc).lower()
+    if "winerror 10061" in text or "connectionrefusederror" in text:
+        st.warning(
+            "Connection refused ([WinError 10061]) means this machine could not connect "
+            "to the Cerebras endpoint. Check internet access, firewall/proxy/DNS settings, "
+            "or stale Streamlit processes. This is a provider connectivity issue, not a SQL "
+            "or prompt-strategy failure."
+        )
 
 
 def _real_provider_status(config: AppConfig) -> str:

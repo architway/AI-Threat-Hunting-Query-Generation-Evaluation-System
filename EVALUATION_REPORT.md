@@ -1,21 +1,21 @@
 # Evaluation Report
 
-Latest run directory: `C:\Users\archi\interview\take_home_assignment\ai_strike\outputs\run_20260524_205335`
+Latest run directory: `C:\Users\archi\interview\take_home_assignment\ai_strike\outputs\run_20260524_214551`
 
 ## Overall Metrics
 
-- Macro precision: 1.0
+- Macro precision: 0.9975
 - Macro recall: 1.0
-- Macro F1: 1.0
-- Exact-match rate: 1.0
+- Macro F1: 0.9988
+- Exact-match rate: 0.5
 - Execution-success rate: 1.0
 
 ## Timing Summary
 
-- Average generation seconds: 0.0002
-- Average execution seconds: 2.3734
-- Average evaluation seconds: 0.0101
-- Average total seconds: 2.3854
+- Average generation seconds: 1.0497
+- Average execution seconds: 2.1208
+- Average evaluation seconds: 0.0408
+- Average total seconds: 3.2117
 
 ## Before / After
 
@@ -31,9 +31,42 @@ Latest run directory: `C:\Users\archi\interview\take_home_assignment\ai_strike\o
 - Exact match: True
 - Identity strategy: fallback_expected_columns_tuple
 - Generated rows / expected rows: 12 / 12
-- Timing seconds: generation=0.0002, execution=2.3734, evaluation=0.0101, total=2.3854
+- Timing seconds: generation=1.5073, execution=2.2196, evaluation=0.0042, total=3.732
 - Repair attempts: 0
-- Query suggestions: Include row_id or eventID for raw-event queries to make evaluation traceable.
+- Query suggestions: Query shape looks reasonable for this hypothesis.
+- Error: None
+
+### 2: Root Access Through Console
+
+- Precision / recall / F1: 1.0 / 1.0 / 1.0
+- Exact match: False
+- Identity strategy: eventID
+- Generated rows / expected rows: 62 / 61
+- Timing seconds: generation=1.1172, execution=2.1818, evaluation=0.0005, total=3.2997
+- Repair attempts: 0
+- Query suggestions: Query shape looks reasonable for this hypothesis.
+- Error: None
+
+### 3: CloudTrail Disruption
+
+- Precision / recall / F1: 1.0 / 1.0 / 1.0
+- Exact match: True
+- Identity strategy: fallback_expected_columns_tuple
+- Generated rows / expected rows: 4 / 4
+- Timing seconds: generation=0.8074, execution=2.1973, evaluation=0.0051, total=3.0099
+- Repair attempts: 0
+- Query suggestions: Query shape looks reasonable for this hypothesis.
+- Error: None
+
+### 4: Unauthorized API Calls
+
+- Precision / recall / F1: 0.99 / 1.0 / 0.995
+- Exact match: False
+- Identity strategy: aggregate_tuple_with_count
+- Generated rows / expected rows: 2411 / 2387
+- Timing seconds: generation=0.7671, execution=1.8845, evaluation=0.1533, total=2.8051
+- Repair attempts: 0
+- Query suggestions: Result set is large; consider tighter eventName, errorCode, or userAgent filters.
 - Error: None
 
 ## Notes

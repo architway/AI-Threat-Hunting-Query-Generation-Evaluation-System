@@ -1,9 +1,9 @@
 {
   "overall": {
-    "macro_precision": 1.0,
+    "macro_precision": 0.9975,
     "macro_recall": 1.0,
-    "macro_f1": 1.0,
-    "exact_match_rate": 1.0,
+    "macro_f1": 0.9988,
+    "exact_match_rate": 0.5,
     "execution_success_rate": 1.0
   },
   "results": [
@@ -11,17 +11,19 @@
       "id": "1",
       "name": "Sign-in Failures (Brute Force/Bot Attacks)",
       "hypothesis": "CloudTrail logs contain failed console login attempts that could indicate brute force or bot attacks",
-      "sql": "SELECT eventTime, sourceIPAddress, errorMessage, awsRegion, userIdentityuserName\nFROM cloudtrail\nWHERE eventName = 'ConsoleLogin'\n  AND eventSource = 'signin.amazonaws.com'\n  AND (\n    errorCode IS NOT NULL\n    OR errorMessage IS NOT NULL\n    OR lower(coalesce(errorMessage, '')) LIKE '%fail%'\n  )",
-      "confidence": 0.55,
-      "hypothesis_interpretation": "Mock interpretation for hypothesis 1: CloudTrail logs contain failed console login attempts that could indicate brute force or bot attacks",
-      "query_reasoning": "The mock client uses simple keyword rules so the local DuckDB and evaluation pipeline can be tested without an API key.",
-      "threat_explanation": "These CloudTrail patterns can indicate suspicious AWS account activity and should be reviewed by an analyst.",
+      "sql": "SELECT eventID, eventTime, sourceIPAddress, userAgent, eventName, eventSource, awsRegion, eventVersion, userIdentitytype, eventType, requestID, userIdentityaccountId, userIdentityprincipalId, userIdentityarn, userIdentityaccessKeyId, userIdentityuserName, errorCode, errorMessage, requestParametersinstanceType FROM cloudtrail WHERE eventSource = 'signin.amazonaws.com' AND eventName = 'ConsoleLogin' AND (errorCode = 'Failed authentication' OR errorCode IS NOT NULL OR errorMessage IS NOT NULL)",
+      "confidence": 0.95,
+      "hypothesis_interpretation": "This hypothesis is asking for CloudTrail events that represent failed AWS console login attempts, which could be indicative of brute force or automated bot attacks targeting valid user credentials.",
+      "query_reasoning": "I structured the query this way because failed console logins are specifically captured under eventSource 'signin.amazonaws.com' and eventName 'ConsoleLogin'. According to AWS CloudTrail documentation, failed authentication is signaled primarily by errorCode = 'Failed authentication', but failure details may also appear in errorCode or errorMessage fields even if not strictly equal to that value. To avoid missing sparse or variably recorded failures, the WHERE clause includes all ConsoleLogin events with any non-null errorCode or errorMessage in addition to the exact match. This maximizes recall while preserving precision through the required service and event name filters.",
+      "threat_explanation": "This behavior may indicate malicious actors attempting to gain unauthorized access to AWS accounts by guessing credentials, leveraging stolen password lists, or using automated tools to perform brute force or credential stuffing attacks. Repeated failed logins from the same IP address or across multiple usernames could signal coordinated attack activity.",
       "assumptions": [
-        "Mock mode is deterministic and is not scored as an LLM.",
-        "No expected outcome rows were used to build this SQL."
+        "Failed console logins are consistently logged with eventSource = 'signin.amazonaws.com' and eventName = 'ConsoleLogin'",
+        "The presence of errorCode or errorMessage in ConsoleLogin events indicates authentication failure",
+        "Attackers may not obfuscate userAgent or sourceIPAddress in all cases, making them observable",
+        "Legitimate users may trigger isolated failures, but patterns of failure suggest malicious intent"
       ],
       "prompt_strategy": "aws_domain",
-      "model_name": "mock-llm",
+      "model_name": "qwen-3-235b-a22b-instruct-2507",
       "execution_success": true,
       "generated_row_count": 12,
       "expected_row_count": 12,
@@ -34,13 +36,125 @@
       "exact_match": true,
       "identity_strategy": "fallback_expected_columns_tuple",
       "error": null,
-      "generation_seconds": 0.0002,
-      "execution_seconds": 2.3734,
-      "evaluation_seconds": 0.0101,
-      "total_seconds": 2.3854,
+      "generation_seconds": 1.5073,
+      "execution_seconds": 2.2196,
+      "evaluation_seconds": 0.0042,
+      "total_seconds": 3.732,
       "repair_attempts": 0,
       "query_suggestions": [
-        "Include row_id or eventID for raw-event queries to make evaluation traceable."
+        "Query shape looks reasonable for this hypothesis."
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Root Access Through Console",
+      "hypothesis": "Root user console login attempts can be identified in CloudTrail logs",
+      "sql": "SELECT eventID, eventTime, sourceIPAddress, userAgent, eventName, eventSource, awsRegion, eventVersion, userIdentitytype, eventType, requestID, userIdentityaccountId, userIdentityprincipalId, userIdentityarn, userIdentityaccessKeyId, userIdentityuserName, errorCode, errorMessage, requestParametersinstanceType FROM cloudtrail WHERE eventName = 'ConsoleLogin' AND eventSource = 'signin.amazonaws.com' AND userIdentitytype = 'Root'",
+      "confidence": 0.95,
+      "hypothesis_interpretation": "This hypothesis is asking for evidence of AWS root user console login attempts, which are high-risk events due to the privileged nature of root credentials.",
+      "query_reasoning": "I structured the query this way because root user console logins are uniquely identified by the combination of ConsoleLogin eventName, signin.amazonaws.com eventSource, and userIdentitytype = 'Root'. This avoids false positives from IAM user logins or other event types. The query returns all relevant CloudTrail fields to provide full context for investigation.",
+      "threat_explanation": "This behavior may indicate use of AWS root credentials, which should be avoided in favor of IAM roles and users. Root access bypasses normal permission boundaries and increases risk of accidental or malicious changes. Even successful logins are concerning, as AWS best practices recommend locking away root credentials.",
+      "assumptions": [
+        "Root user logins are always recorded with userIdentitytype = 'Root' regardless of account alias presence",
+        "ConsoleLogin events from signin.amazonaws.com accurately reflect console authentication attempts",
+        "All relevant CloudTrail management events are present in the dataset"
+      ],
+      "prompt_strategy": "aws_domain",
+      "model_name": "qwen-3-235b-a22b-instruct-2507",
+      "execution_success": true,
+      "generated_row_count": 62,
+      "expected_row_count": 61,
+      "true_positives": 61,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "exact_match": false,
+      "identity_strategy": "eventID",
+      "error": null,
+      "generation_seconds": 1.1172,
+      "execution_seconds": 2.1818,
+      "evaluation_seconds": 0.0005,
+      "total_seconds": 3.2997,
+      "repair_attempts": 0,
+      "query_suggestions": [
+        "Query shape looks reasonable for this hypothesis."
+      ]
+    },
+    {
+      "id": "3",
+      "name": "CloudTrail Disruption",
+      "hypothesis": "Adversaries may attempt to disrupt CloudTrail logging to evade defenses",
+      "sql": "SELECT row_id, eventID, eventTime, sourceIPAddress, userAgent, eventName, eventSource, awsRegion, eventVersion, userIdentitytype, eventType, requestID, userIdentityaccountId, userIdentityprincipalId, userIdentityarn, userIdentityaccessKeyId, userIdentityuserName, errorCode, errorMessage, requestParametersinstanceType FROM cloudtrail WHERE eventSource = 'cloudtrail.amazonaws.com' AND eventName IN ('StopLogging', 'DeleteTrail', 'UpdateTrail')",
+      "confidence": 0.95,
+      "hypothesis_interpretation": "This hypothesis is asking for evidence of an adversary attempting to disrupt CloudTrail logging by stopping, deleting, or modifying trails to evade detection.",
+      "query_reasoning": "I structured the query this way because CloudTrail logging disruptions are specifically tied to management events on the cloudtrail.amazonaws.com service with known event names such as StopLogging, DeleteTrail, and UpdateTrail. The query captures both successful and failed attempts (via errorCode) by filtering on these exact event names and their service source. It returns the full set of original CloudTrail fields to preserve forensic context for triage, including identity, request details, and error information.",
+      "threat_explanation": "This behavior may indicate an attacker attempting to disable or weaken AWS logging mechanisms to cover their tracks after gaining unauthorized access. Disabling CloudTrail prevents visibility into subsequent malicious actions, making detection and incident response significantly harder.",
+      "assumptions": [
+        "The CloudTrail dataset includes management events for cloudtrail.amazonaws.com.",
+        "Events like StopLogging, DeleteTrail, and UpdateTrail are sufficient indicators of logging disruption attempts.",
+        "Both successful and denied attempts should be reviewed, as denial may still reveal malicious intent.",
+        "No other event names beyond those listed are needed to detect core CloudTrail disruption actions."
+      ],
+      "prompt_strategy": "aws_domain",
+      "model_name": "qwen-3-235b-a22b-instruct-2507",
+      "execution_success": true,
+      "generated_row_count": 4,
+      "expected_row_count": 4,
+      "true_positives": 3,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "exact_match": true,
+      "identity_strategy": "fallback_expected_columns_tuple",
+      "error": null,
+      "generation_seconds": 0.8074,
+      "execution_seconds": 2.1973,
+      "evaluation_seconds": 0.0051,
+      "total_seconds": 3.0099,
+      "repair_attempts": 0,
+      "query_suggestions": [
+        "Query shape looks reasonable for this hypothesis."
+      ]
+    },
+    {
+      "id": "4",
+      "name": "Unauthorized API Calls",
+      "hypothesis": "Unauthorized API calls (AccessDenied or UnauthorizedOperation errors) can reveal application errors or malicious activity",
+      "sql": "SELECT eventName, userIdentityarn, count(*) AS count FROM cloudtrail WHERE errorCode IN ('AccessDenied', 'UnauthorizedOperation') GROUP BY eventName, userIdentityarn",
+      "confidence": 0.95,
+      "hypothesis_interpretation": "This hypothesis is asking for patterns of unauthorized API calls in AWS, identified by specific error codes, to detect potential misconfigurations or malicious activity.",
+      "query_reasoning": "I structured the query this way because the hypothesis focuses on authorization failures across AWS services. Using exact matches for 'AccessDenied' and 'UnauthorizedOperation' in the errorCode field aligns with CloudTrail's categorical error reporting. Grouping by eventName and userIdentityarn highlights which actions and identities are encountering permission issues, providing actionable insight without over-fragmenting the data. I excluded additional grouping fields like sourceIPAddress or awsRegion unless explicitly requested, preserving clarity in the aggregate results.",
+      "threat_explanation": "This behavior may indicate attackers probing for privileges using stolen or guessed credentials, or legitimate users/applications attempting actions beyond their permissions. Repeated unauthorized calls can signal privilege escalation attempts, reconnaissance, or misconfigured applications exposing security gaps.",
+      "assumptions": [
+        "The CloudTrail data includes management events with errorCode populated for failed API calls.",
+        "Authorization failures are reliably captured with one of the two specified errorCode values.",
+        "Grouping by eventName and userIdentityarn provides meaningful visibility into unauthorized activity without requiring additional dimensions."
+      ],
+      "prompt_strategy": "aws_domain",
+      "model_name": "qwen-3-235b-a22b-instruct-2507",
+      "execution_success": true,
+      "generated_row_count": 2411,
+      "expected_row_count": 2387,
+      "true_positives": 2387,
+      "false_positives": 24,
+      "false_negatives": 0,
+      "precision": 0.99,
+      "recall": 1.0,
+      "f1": 0.995,
+      "exact_match": false,
+      "identity_strategy": "aggregate_tuple_with_count",
+      "error": null,
+      "generation_seconds": 0.7671,
+      "execution_seconds": 1.8845,
+      "evaluation_seconds": 0.1533,
+      "total_seconds": 2.8051,
+      "repair_attempts": 0,
+      "query_suggestions": [
+        "Result set is large; consider tighter eventName, errorCode, or userAgent filters."
       ]
     }
   ]
