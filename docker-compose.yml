@@ -1,0 +1,22 @@
+services:
+  ai-strike-cli:
+    build: .
+    command: python main.py --mock-llm --limit 1
+    # The large CloudTrail CSV stays on the host and is mounted read-only.
+    volumes:
+      - ./nineteenFeaturesDf.csv:/app/nineteenFeaturesDf.csv:ro
+      - ./hypotheses.json:/app/hypotheses.json:ro
+      - ./hypotheses_outcomes.json:/app/hypotheses_outcomes.json:ro
+      - ./outputs:/app/outputs
+
+  ai-strike-demo:
+    build: .
+    command: streamlit run app.py --server.address=0.0.0.0
+    ports:
+      - "8501:8501"
+    # The demo uses the same mounted assignment files as the CLI service.
+    volumes:
+      - ./nineteenFeaturesDf.csv:/app/nineteenFeaturesDf.csv:ro
+      - ./hypotheses.json:/app/hypotheses.json:ro
+      - ./hypotheses_outcomes.json:/app/hypotheses_outcomes.json:ro
+      - ./outputs:/app/outputs

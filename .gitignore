@@ -1,0 +1,28 @@
+# Local environment and secrets
+.venv/
+.env
+
+# Python/runtime caches
+__pycache__/
+.pytest_cache/
+.pytest_tmp/
+*.pyc
+*.pyo
+*.pyd
+
+# Generated run artifacts
+outputs/
+
+# Large local assignment inputs
+archive.zip
+nineteenFeaturesDf.csv
+
+# Personal planning and copied reference material
+PHASE1PLAN.md
+PHASE2PLAN.md
+PHASE3PLAN.md
+plannedmyself.md
+mediumarticle.txt
+
+# OS/editor noise
+.DS_Store

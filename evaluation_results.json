@@ -1,0 +1,47 @@
+{
+  "overall": {
+    "macro_precision": 1.0,
+    "macro_recall": 1.0,
+    "macro_f1": 1.0,
+    "exact_match_rate": 1.0,
+    "execution_success_rate": 1.0
+  },
+  "results": [
+    {
+      "id": "1",
+      "name": "Sign-in Failures (Brute Force/Bot Attacks)",
+      "hypothesis": "CloudTrail logs contain failed console login attempts that could indicate brute force or bot attacks",
+      "sql": "SELECT eventTime, sourceIPAddress, errorMessage, awsRegion, userIdentityuserName\nFROM cloudtrail\nWHERE eventName = 'ConsoleLogin'\n  AND eventSource = 'signin.amazonaws.com'\n  AND (\n    errorCode IS NOT NULL\n    OR errorMessage IS NOT NULL\n    OR lower(coalesce(errorMessage, '')) LIKE '%fail%'\n  )",
+      "confidence": 0.55,
+      "hypothesis_interpretation": "Mock interpretation for hypothesis 1: CloudTrail logs contain failed console login attempts that could indicate brute force or bot attacks",
+      "query_reasoning": "The mock client uses simple keyword rules so the local DuckDB and evaluation pipeline can be tested without an API key.",
+      "threat_explanation": "These CloudTrail patterns can indicate suspicious AWS account activity and should be reviewed by an analyst.",
+      "assumptions": [
+        "Mock mode is deterministic and is not scored as an LLM.",
+        "No expected outcome rows were used to build this SQL."
+      ],
+      "prompt_strategy": "aws_domain",
+      "model_name": "mock-llm",
+      "execution_success": true,
+      "generated_row_count": 12,
+      "expected_row_count": 12,
+      "true_positives": 12,
+      "false_positives": 0,
+      "false_negatives": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "exact_match": true,
+      "identity_strategy": "fallback_expected_columns_tuple",
+      "error": null,
+      "generation_seconds": 0.0002,
+      "execution_seconds": 2.3734,
+      "evaluation_seconds": 0.0101,
+      "total_seconds": 2.3854,
+      "repair_attempts": 0,
+      "query_suggestions": [
+        "Include row_id or eventID for raw-event queries to make evaluation traceable."
+      ]
+    }
+  ]
+}

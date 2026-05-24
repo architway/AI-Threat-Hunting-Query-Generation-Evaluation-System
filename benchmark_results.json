@@ -1,0 +1,245 @@
+{
+  "submission_model": "gpt-oss-120b",
+  "provider": "cerebras",
+  "prompt_strategy": "aws_domain",
+  "repair_attempts": 0,
+  "overall_ranking": [
+    {
+      "rank": 1,
+      "model_name": "gpt-oss-120b",
+      "macro_precision": 0.9797,
+      "macro_recall": 1.0,
+      "macro_f1": 0.9888,
+      "exact_match_rate": 0.6364,
+      "execution_success_rate": 1.0,
+      "total_seconds": 119.1511,
+      "avg_generation_seconds": 5.8887,
+      "avg_execution_seconds": 4.7685,
+      "avg_evaluation_seconds": 0.1416,
+      "avg_total_seconds": 10.7991
+    },
+    {
+      "rank": 2,
+      "model_name": "qwen-3-235b-a22b-instruct-2507",
+      "macro_precision": 0.9797,
+      "macro_recall": 1.0,
+      "macro_f1": 0.9888,
+      "exact_match_rate": 0.6364,
+      "execution_success_rate": 1.0,
+      "total_seconds": 141.2777,
+      "avg_generation_seconds": 0.8649,
+      "avg_execution_seconds": 11.4506,
+      "avg_evaluation_seconds": 0.4907,
+      "avg_total_seconds": 12.8068
+    },
+    {
+      "rank": 3,
+      "model_name": "llama3.1-8b",
+      "macro_precision": 0.708,
+      "macro_recall": 0.8182,
+      "macro_f1": 0.7166,
+      "exact_match_rate": 0.4545,
+      "execution_success_rate": 1.0,
+      "total_seconds": 160.1374,
+      "avg_generation_seconds": 0.6263,
+      "avg_execution_seconds": 12.689,
+      "avg_evaluation_seconds": 1.1336,
+      "avg_total_seconds": 14.4497
+    },
+    {
+      "rank": 4,
+      "model_name": "zai-glm-4.7",
+      "macro_precision": 0.0,
+      "macro_recall": 0.0,
+      "macro_f1": 0.0,
+      "exact_match_rate": 0.0,
+      "execution_success_rate": 0.0,
+      "total_seconds": 127.0302,
+      "avg_generation_seconds": 0.0,
+      "avg_execution_seconds": 0.0,
+      "avg_evaluation_seconds": 0.0,
+      "avg_total_seconds": 11.417
+    }
+  ],
+  "benchmark_summary": {
+    "models": [
+      {
+        "model_name": "zai-glm-4.7",
+        "total_seconds": 127.0302,
+        "avg_generation_seconds": 0.0,
+        "avg_execution_seconds": 0.0,
+        "avg_evaluation_seconds": 0.0,
+        "avg_total_seconds": 11.417,
+        "attempted_requests": 11
+      },
+      {
+        "model_name": "gpt-oss-120b",
+        "total_seconds": 119.1511,
+        "avg_generation_seconds": 5.8887,
+        "avg_execution_seconds": 4.7685,
+        "avg_evaluation_seconds": 0.1416,
+        "avg_total_seconds": 10.7991,
+        "attempted_requests": 11
+      },
+      {
+        "model_name": "qwen-3-235b-a22b-instruct-2507",
+        "total_seconds": 141.2777,
+        "avg_generation_seconds": 0.8649,
+        "avg_execution_seconds": 11.4506,
+        "avg_evaluation_seconds": 0.4907,
+        "avg_total_seconds": 12.8068,
+        "attempted_requests": 11
+      },
+      {
+        "model_name": "llama3.1-8b",
+        "total_seconds": 160.1374,
+        "avg_generation_seconds": 0.6263,
+        "avg_execution_seconds": 12.689,
+        "avg_evaluation_seconds": 1.1336,
+        "avg_total_seconds": 14.4497,
+        "attempted_requests": 11
+      }
+    ],
+    "all_models": {
+      "total_seconds": 547.5964,
+      "avg_generation_seconds": 1.845,
+      "avg_execution_seconds": 7.227,
+      "avg_evaluation_seconds": 0.4415,
+      "avg_total_seconds": 12.3681
+    }
+  },
+  "primary_model_per_hypothesis": [
+    {
+      "id": "1",
+      "name": "Sign-in Failures (Brute Force/Bot Attacks)",
+      "generation_seconds": 0.9687,
+      "execution_seconds": 3.7271,
+      "evaluation_seconds": 0.0112,
+      "total_seconds": 4.7072,
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "execution_success": true
+    },
+    {
+      "id": "2",
+      "name": "Root Access Through Console",
+      "generation_seconds": 0.6655,
+      "execution_seconds": 4.0414,
+      "evaluation_seconds": 0.0012,
+      "total_seconds": 4.7083,
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "execution_success": true
+    },
+    {
+      "id": "3",
+      "name": "CloudTrail Disruption",
+      "generation_seconds": 0.6992,
+      "execution_seconds": 4.2186,
+      "evaluation_seconds": 0.0119,
+      "total_seconds": 4.9299,
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "execution_success": true
+    },
+    {
+      "id": "4",
+      "name": "Unauthorized API Calls",
+      "generation_seconds": 0.7536,
+      "execution_seconds": 3.4108,
+      "evaluation_seconds": 0.3592,
+      "total_seconds": 4.5237,
+      "f1": 0.995,
+      "precision": 0.99,
+      "recall": 1.0,
+      "execution_success": true
+    },
+    {
+      "id": "5",
+      "name": "Whoami Reconnaissance",
+      "generation_seconds": 0.8365,
+      "execution_seconds": 4.3338,
+      "evaluation_seconds": 0.7806,
+      "total_seconds": 5.9521,
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "execution_success": true
+    },
+    {
+      "id": "6",
+      "name": "Secrets Manager Access",
+      "generation_seconds": 1.0311,
+      "execution_seconds": 4.2287,
+      "evaluation_seconds": 0.0006,
+      "total_seconds": 5.2607,
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "execution_success": true
+    },
+    {
+      "id": "7",
+      "name": "Large EC2 Instance Creation",
+      "generation_seconds": 0.8908,
+      "execution_seconds": 3.7919,
+      "evaluation_seconds": 0.0115,
+      "total_seconds": 4.6945,
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "execution_success": true
+    },
+    {
+      "id": "8",
+      "name": "S3 Bucket Brute Force",
+      "generation_seconds": 56.2014,
+      "execution_seconds": 10.7847,
+      "evaluation_seconds": 0.0493,
+      "total_seconds": 67.0356,
+      "f1": 0.887,
+      "precision": 0.797,
+      "recall": 1.0,
+      "execution_success": true
+    },
+    {
+      "id": "9a",
+      "name": "Suspicious User Agents",
+      "generation_seconds": 0.782,
+      "execution_seconds": 5.563,
+      "evaluation_seconds": 0.2863,
+      "total_seconds": 6.6315,
+      "f1": 0.995,
+      "precision": 0.9901,
+      "recall": 1.0,
+      "execution_success": true
+    },
+    {
+      "id": "9b",
+      "name": "Suspicious User Agents",
+      "generation_seconds": 0.9948,
+      "execution_seconds": 4.1164,
+      "evaluation_seconds": 0.02,
+      "total_seconds": 5.1314,
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "execution_success": true
+    },
+    {
+      "id": "10",
+      "name": "Permanent Key Creation",
+      "generation_seconds": 0.9518,
+      "execution_seconds": 4.237,
+      "evaluation_seconds": 0.0257,
+      "total_seconds": 5.2147,
+      "f1": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "execution_success": true
+    }
+  ]
+}

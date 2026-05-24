@@ -1,0 +1,21 @@
+# Keep local environments, secrets, caches, and generated outputs out of images.
+.venv/
+.env
+__pycache__/
+.pytest_cache/
+.pytest_tmp/
+outputs/
+*.pyc
+*.pyo
+*.pyd
+
+# The dataset and original archive are mounted at runtime, not baked into Docker.
+nineteenFeaturesDf.csv
+archive.zip
+
+# Personal/reference files are not needed inside the runtime image.
+PHASE1PLAN.md
+PHASE2PLAN.md
+PHASE3PLAN.md
+plannedmyself.md
+mediumarticle.txt
